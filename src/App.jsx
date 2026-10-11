@@ -58,64 +58,112 @@ export default function App() {
   };
 
   const k = Math.min(680 / s.size.w, 620 / s.size.h);
+  const nice = key => key[0].toUpperCase() + key.slice(1);
   const num = (key, min, max) => (
-    <label>{key}<input type="range" min={min} max={max} value={s[key]} onChange={e => set({ [key]: +e.target.value })} /></label>
+    <label className="field" key={key}>
+      <span className="field__row">
+        <span className="field__label">{nice(key)}</span>
+        <span className="field__value">{s[key]}</span>
+      </span>
+      <input type="range" min={min} max={max} value={s[key]} onChange={e => set({ [key]: +e.target.value })} />
+    </label>
   );
+  const CONTENT_FIELDS = [['title', 'Title'], ['channel', 'Channel'], ['duration', 'Duration'], ['views', 'Views'], ['ago', 'Published']];
 
   return (
-    <div style={{ display: 'flex', gap: 24, padding: 24, fontFamily: 'system-ui' }}>
-      <aside style={{ width: 300, display: 'grid', gap: 10, alignContent: 'start' }}>
-        <input placeholder="YouTube URL" value={url} onChange={e => setUrl(e.target.value)} />
-        <button onClick={load}>Load</button>
+    <div className="workspace">
+      <aside className="sidebar" aria-label="Card options">
+        <div className="stack">
+          <label className="field">
+            <span className="field__label">YouTube URL</span>
+            <input placeholder="https://youtube.com/watch?v=…" value={url} onChange={e => setUrl(e.target.value)} />
+          </label>
+          <button className="btn--primary btn--block" onClick={load}>Load video</button>
+        </div>
 
         {d && <>
-          {['title', 'channel', 'duration', 'views', 'ago'].map(k => (
-            <label key={k}>{k}<input value={d[k]} onChange={e => setD({ ...d, [k]: e.target.value })} /></label>
-          ))}
-
-          <label>Background
-            <select value={s.mode} onChange={e => set({ mode: e.target.value })}>
-              {['solid', 'gradient', 'auto', 'blur', 'image'].map(m => <option key={m}>{m}</option>)}
-            </select>
-          </label>
-          {s.mode === 'solid' && <input type="color" value={s.color} onChange={e => set({ color: e.target.value })} />}
-          {s.mode === 'gradient' && <>
-            <div style={{ display: 'flex', gap: 6 }}>
-              {GRADIENTS.map(([a, b]) => (
-                <button key={a + b} onClick={() => set({ c1: a, c2: b })}
-                  style={{ width: 32, height: 32, background: `linear-gradient(135deg,${a},${b})` }} />
+          <div className="section">
+            <div className="section__body">
+              <div className="group-title">Content</div>
+              {CONTENT_FIELDS.map(([f, label]) => (
+                <label className="field" key={f}>
+                  <span className="field__label">{label}</span>
+                  <input value={d[f]} onChange={e => setD({ ...d, [f]: e.target.value })} />
+                </label>
               ))}
             </div>
-            <div><input type="color" value={s.c1} onChange={e => set({ c1: e.target.value })} />
-              <input type="color" value={s.c2} onChange={e => set({ c2: e.target.value })} /></div>
-          </>}
-          {(s.mode === 'gradient' || s.mode === 'auto') && num('angle', 0, 360)}
-          {s.mode === 'blur' && num('blur', 0, 100)}
-          {s.mode === 'image' && <input type="file" accept="image/*" onChange={upload} />}
+          </div>
 
-          {num('padding', 16, 200)}
-          {num('radius', 0, 60)}
-          {[['shadow', 'Shadow'], ['showAvatar', 'Avatar'], ['showStats', 'Views & date'], ['showDuration', 'Duration']].map(([key, label]) => (
-            <label key={key}><input type="checkbox" checked={s[key]} onChange={e => set({ [key]: e.target.checked })} /> {label}</label>
-          ))}
+          <div className="section">
+            <div className="section__body">
+              <div className="group-title">Background</div>
+              <label className="field">
+                <span className="field__label">Style</span>
+                <select value={s.mode} onChange={e => set({ mode: e.target.value })}>
+                  {['solid', 'gradient', 'auto', 'blur', 'image'].map(m => <option key={m}>{m}</option>)}
+                </select>
+              </label>
+              {s.mode === 'solid' && <input type="color" value={s.color} onChange={e => set({ color: e.target.value })} aria-label="Solid color" />}
+              {s.mode === 'gradient' && <>
+                <div className="swatches">
+                  {GRADIENTS.map(([a, b]) => (
+                    <button key={a + b} className="swatch" style={{ background: `linear-gradient(135deg,${a},${b})` }}
+                      onClick={() => set({ c1: a, c2: b })} aria-label={`Gradient ${a} to ${b}`} />
+                  ))}
+                </div>
+                <div className="color-row">
+                  <input type="color" value={s.c1} onChange={e => set({ c1: e.target.value })} aria-label="Gradient start color" />
+                  <input type="color" value={s.c2} onChange={e => set({ c2: e.target.value })} aria-label="Gradient end color" />
+                </div>
+              </>}
+              {(s.mode === 'gradient' || s.mode === 'auto') && num('angle', 0, 360)}
+              {s.mode === 'blur' && num('blur', 0, 100)}
+              {s.mode === 'image' && <input type="file" accept="image/*" onChange={upload} aria-label="Background image" />}
+            </div>
+          </div>
 
-          <select value={s.size.name} onChange={e => set({ size: SIZES.find(z => z.name === e.target.value) })}>
-            {SIZES.map(z => <option key={z.name}>{z.name}</option>)}
-          </select>
-          <button onClick={() => download()}>Download PNG</button>
-          <button onClick={copy}>Copy to clipboard</button>
-          <button onClick={exportAll}>Export all sizes</button>
+          <div className="section">
+            <div className="section__body">
+              <div className="group-title">Layout</div>
+              {num('padding', 16, 200)}
+              {num('radius', 0, 60)}
+              <div className="stack">
+                {[['shadow', 'Shadow'], ['showAvatar', 'Avatar'], ['showStats', 'Views & date'], ['showDuration', 'Duration']].map(([key, label]) => (
+                  <label className="check" key={key}>
+                    <input type="checkbox" checked={s[key]} onChange={e => set({ [key]: e.target.checked })} /> {label}
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="section">
+            <div className="section__body">
+              <div className="group-title">Export</div>
+              <label className="field">
+                <span className="field__label">Canvas size</span>
+                <select value={s.size.name} onChange={e => set({ size: SIZES.find(z => z.name === e.target.value) })}>
+                  {SIZES.map(z => <option key={z.name}>{z.name}</option>)}
+                </select>
+              </label>
+              <div className="actions">
+                <button className="btn--primary" onClick={() => download()}>Download PNG</button>
+                <button onClick={copy}>Copy to clipboard</button>
+                <button onClick={exportAll}>Export all sizes</button>
+              </div>
+            </div>
+          </div>
         </>}
       </aside>
 
-      <main>
-        {d && (
-          <div style={{ width: s.size.w * k, height: s.size.h * k, overflow: 'hidden' }}>
+      <main className="preview-area">
+        {d ? (
+          <div className="preview-frame" style={{ width: s.size.w * k, height: s.size.h * k }}>
             <div style={{ transform: `scale(${k})`, transformOrigin: 'top left' }}>
               <Card ref={ref} d={d} s={s} />
             </div>
           </div>
-        )}
+        ) : <p className="empty">Enter a YouTube URL and load a video to preview your card.</p>}
       </main>
     </div>
   );
