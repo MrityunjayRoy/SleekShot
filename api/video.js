@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
   const v = await api('videos', `part=snippet,contentDetails,statistics&id=${id}`);
   const item = v.items?.[0];
-  if (!item) return res.status(404).json({ error: 'Video not found' });
+  if (!item) return res.status(404).json({ error: 'Video not found', id, raw: v});
 
   const c = await api('channels', `part=snippet&id=${item.snippet.channelId}`);
   const t = item.snippet.thumbnails;
