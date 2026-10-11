@@ -9,7 +9,7 @@ export default function Root() {
     <>
       <header className="topbar">
         <div className="brand">
-          <span>SneekShot</span>
+          <span>SleekShot</span>
         </div>
         <nav className="tabs" aria-label="Card type">
           <a className="tab" href="/" aria-current={!onGitHub ? 'page' : undefined}>YouTube</a>
