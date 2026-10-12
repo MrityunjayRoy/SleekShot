@@ -19,10 +19,6 @@ function loadStyle() {
   } catch { return REPO_DEFAULTS; }
 }
 
-const box = { display: 'grid', gap: 8, padding: '10px 0' };
-const row = { display: 'grid', gap: 3, fontSize: 13 };
-const inline = { display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 };
-
 export default function RepoApp() {
   const [input, setInput] = useState('');
   const [items, setItems] = useState([]);   // loaded repos, one card each
@@ -129,59 +125,66 @@ export default function RepoApp() {
 
   // ---- control builders (plain functions, not components, so inputs keep focus) ----
   const range = (label, key, min, max, step = 1, unit = '') => (
-    <label style={row} key={key}>
-      <span style={{ display: 'flex', justifyContent: 'space-between' }}><span>{label}</span><span style={{ opacity: .6 }}>{s[key]}{unit}</span></span>
+    <label className="field" key={key}>
+      <span className="field__row">
+        <span className="field__label">{label}</span>
+        <span className="field__value">{s[key]}{unit}</span>
+      </span>
       <input type="range" min={min} max={max} step={step} value={s[key]} onChange={e => set({ [key]: +e.target.value })} />
     </label>
   );
   const check = (label, key, disabled = false) => (
-    <label style={inline} key={key}>
+    <label className="check" key={key}>
       <input type="checkbox" checked={!!s[key]} disabled={disabled} onChange={e => set({ [key]: e.target.checked })} /> {label}
     </label>
   );
   const select = (label, key, opts) => (
-    <label style={row} key={key}>{label}
+    <label className="field" key={key}>
+      <span className="field__label">{label}</span>
       <select value={s[key]} onChange={e => set({ [key]: e.target.value })}>
         {opts.map(o => Array.isArray(o) ? <option key={o[0]} value={o[0]}>{o[1]}</option> : <option key={o}>{o}</option>)}
       </select>
     </label>
   );
   const colorIn = (label, key) => (
-    <label style={inline} key={key}>
+    <label className="check" key={key}>
       <input type="color" value={s[key]} onChange={e => set({ [key]: e.target.value, palette: 'Custom' })} /> {label}
     </label>
   );
   const toggleIn = (key, val) => set({ [key]: s[key].includes(val) ? s[key].filter(x => x !== val) : [...s[key], val] });
   const text = (label, key, multiline) => (
-    <label style={row} key={key}>{label}
+    <label className="field" key={key}>
+      <span className="field__label">{label}</span>
       {multiline
         ? <textarea rows={4} value={d[key] || ''} onChange={e => setD({ ...d, [key]: e.target.value })} />
         : <input value={d[key] || ''} onChange={e => setD({ ...d, [key]: e.target.value })} />}
     </label>
   );
   const section = (title, children, open = false) => (
-    <details open={open} style={{ borderTop: '1px solid #e5e7eb' }}>
-      <summary style={{ cursor: 'pointer', fontWeight: 600, padding: '10px 0' }}>{title}</summary>
-      <div style={box}>{children}</div>
+    <details className="section" open={open}>
+      <summary>{title}</summary>
+      <div className="section__body">{children}</div>
     </details>
   );
 
   const k = Math.min(680 / size.w, 640 / size.h);
 
   return (
-    <div style={{ display: 'flex', gap: 24, padding: 24, fontFamily: 'system-ui', alignItems: 'flex-start' }}>
-      <aside style={{ width: 330, flexShrink: 0, maxHeight: 'calc(100vh - 80px)', overflowY: 'auto', paddingRight: 8 }}>
-        <div style={{ display: 'grid', gap: 8, paddingBottom: 12 }}>
-          <textarea rows={4} placeholder={'Repos, one per line (max 12)\nvercel/next.js\nhttps://github.com/facebook/react'}
-            value={input} onChange={e => setInput(e.target.value)} />
-          <button onClick={load} disabled={busy}>{busy ? 'Loading…' : 'Load repos'}</button>
+    <div className="workspace">
+      <aside className="sidebar" aria-label="Card options">
+        <div className="stack" style={{ paddingBottom: 12 }}>
+          <label className="field">
+            <span className="field__label">Repositories</span>
+            <textarea rows={4} placeholder={'One per line (max 12)\nvercel/next.js\nhttps://github.com/facebook/react'}
+              value={input} onChange={e => setInput(e.target.value)} />
+          </label>
+          <button className="btn--primary btn--block" onClick={load} disabled={busy}>{busy ? 'Loading…' : 'Load repos'}</button>
         </div>
 
         {items.length > 1 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingBottom: 12 }}>
+          <div className="chips" role="group" aria-label="Loaded repositories">
             {items.map((x, i) => (
-              <button key={x.owner + x.name} onClick={() => setActive(i)}
-                style={{ fontWeight: i === active ? 700 : 400, outline: i === active ? '2px solid #6366f1' : 'none' }}>
+              <button key={x.owner + x.name} className="chip" aria-pressed={i === active} onClick={() => setActive(i)}>
                 {x.name}
               </button>
             ))}
@@ -192,25 +195,28 @@ export default function RepoApp() {
           {section('Export', <>
             {select('Canvas size', 'sizeName', [...SIZES.map(z => z.name), 'Custom'])}
             {s.sizeName === 'Custom' && (
-              <div style={{ display: 'flex', gap: 8 }}>
-                <label style={row}>Width<input type="number" min={200} max={4000} value={s.cw} onChange={e => set({ cw: e.target.value })} /></label>
-                <label style={row}>Height<input type="number" min={200} max={4000} value={s.ch} onChange={e => set({ ch: e.target.value })} /></label>
+              <div className="color-row">
+                <label className="field" style={{ flex: 1 }}><span className="field__label">Width</span><input type="number" min={200} max={4000} value={s.cw} onChange={e => set({ cw: e.target.value })} /></label>
+                <label className="field" style={{ flex: 1 }}><span className="field__label">Height</span><input type="number" min={200} max={4000} value={s.ch} onChange={e => set({ ch: e.target.value })} /></label>
               </div>
             )}
-            <label style={row}>Resolution
+            <label className="field">
+              <span className="field__label">Resolution</span>
               <select value={s.scale} onChange={e => set({ scale: +e.target.value })}>
                 <option value={1}>1x</option><option value={2}>2x</option><option value={3}>3x</option>
               </select>
             </label>
-            <button onClick={() => download()}>Download this card{s.bg ? '' : ' (transparent, card only)'}</button>
-            <button onClick={copy}>Copy to clipboard</button>
-            {items.length > 1 && <button onClick={exportAllRepos}>Download all {items.length} repo cards</button>}
-            <button onClick={exportAllSizes}>Export this card, all sizes</button>
-            <button onClick={reset}>Reset style</button>
+            <div className="actions">
+              <button className="btn--primary" onClick={() => download()}>Download this card{s.bg ? '' : ' (transparent, card only)'}</button>
+              <button onClick={copy}>Copy to clipboard</button>
+              {items.length > 1 && <button onClick={exportAllRepos}>Download all {items.length} repo cards</button>}
+              <button onClick={exportAllSizes}>Export this card, all sizes</button>
+              <button className="btn--ghost" onClick={reset}>Reset style</button>
+            </div>
           </>, true)}
 
           {section('Artwork', <>
-            <button onClick={() => set({ seed: s.seed + 1 })}>Shuffle artwork</button>
+            <button className="btn--block" onClick={() => set({ seed: s.seed + 1 })}>Shuffle artwork</button>
             {check('Show artwork', 'showArt')}
             {range('Glow blobs', 'blobs', 0, 6)}
             {range('Blob size', 'blobSize', 40, 180, 1, '%')}
@@ -223,7 +229,8 @@ export default function RepoApp() {
           </>, true)}
 
           {section('Palette', <>
-            <label style={row}>Preset
+            <label className="field">
+              <span className="field__label">Preset</span>
               <select value={s.palette}
                 onChange={e => e.target.value !== 'Custom' && set({ palette: e.target.value, ...ART_PALETTES[e.target.value] })}>
                 {[...Object.keys(ART_PALETTES), 'Custom'].map(n => <option key={n} value={n}>{n === 'Languages' ? 'Languages (from the repo)' : n}</option>)}
@@ -255,7 +262,8 @@ export default function RepoApp() {
             {text('Website', 'homepage')}
             {text('Created', 'created')}
             {text('Footer text', 'footer')}
-            <label style={row}>Topics (comma separated)
+            <label className="field">
+              <span className="field__label">Topics (comma separated)</span>
               <input value={(d.topics || []).join(', ')}
                 onChange={e => setD({ ...d, topics: e.target.value.split(',').map(x => x.trim()).filter(Boolean) })} />
             </label>
@@ -286,12 +294,12 @@ export default function RepoApp() {
             {select('Stats style', 'statStyle', [['big', 'Big numerals'], ['compact', 'Compact']])}
             {range('Stats size', 'statSize', 50, 160, 1, '%')}
             {REPO_STATS.map(([key, l]) => (
-              <label style={inline} key={key}><input type="checkbox" checked={s.statKeys.includes(key)} onChange={() => toggleIn('statKeys', key)} /> {l}</label>
+              <label className="check" key={key}><input type="checkbox" checked={s.statKeys.includes(key)} onChange={() => toggleIn('statKeys', key)} /> {l}</label>
             ))}
             {range('Topics shown', 'topicCount', 1, 8)}
-            <b style={{ fontSize: 12 }}>Details line</b>
+            <b className="group-title">Details line</b>
             {REPO_META.map(([key, l]) => (
-              <label style={inline} key={key}><input type="checkbox" checked={s.metaKeys.includes(key)} onChange={() => toggleIn('metaKeys', key)} /> {l}</label>
+              <label className="check" key={key}><input type="checkbox" checked={s.metaKeys.includes(key)} onChange={() => toggleIn('metaKeys', key)} /> {l}</label>
             ))}
           </>)}
 
@@ -299,25 +307,25 @@ export default function RepoApp() {
             {check('Background (off = transparent, card only)', 'bg')}
             {s.bg && <>
               {select('Style', 'mode', ['solid', 'gradient', 'auto', 'blur', 'image'])}
-              {s.mode === 'solid' && <input type="color" value={s.color} onChange={e => set({ color: e.target.value })} />}
+              {s.mode === 'solid' && <input type="color" value={s.color} onChange={e => set({ color: e.target.value })} aria-label="Solid color" />}
               {s.mode === 'gradient' && <>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                <div className="swatches">
                   {GRADIENTS.map(([a, b]) => (
-                    <button key={a + b} onClick={() => set({ c1: a, c2: b })}
-                      style={{ width: 32, height: 32, background: `linear-gradient(135deg,${a},${b})` }} />
+                    <button key={a + b} className="swatch" style={{ background: `linear-gradient(135deg,${a},${b})` }}
+                      onClick={() => set({ c1: a, c2: b })} aria-label={`Gradient ${a} to ${b}`} />
                   ))}
                 </div>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  <input type="color" value={s.c1} onChange={e => set({ c1: e.target.value })} />
-                  <input type="color" value={s.c2} onChange={e => set({ c2: e.target.value })} />
+                <div className="color-row">
+                  <input type="color" value={s.c1} onChange={e => set({ c1: e.target.value })} aria-label="Gradient start color" />
+                  <input type="color" value={s.c2} onChange={e => set({ c2: e.target.value })} aria-label="Gradient end color" />
                 </div>
               </>}
               {(s.mode === 'gradient' || s.mode === 'auto') && range('Angle', 'angle', 0, 360, 1, '°')}
               {s.mode === 'blur' && range('Blur', 'blur', 0, 100)}
-              {s.mode === 'image' && <input type="file" accept="image/*" onChange={upload} />}
+              {s.mode === 'image' && <input type="file" accept="image/*" onChange={upload} aria-label="Background image" />}
               {select('Pattern overlay', 'pattern', ['none', 'dots', 'grid', 'lines'])}
               {s.pattern !== 'none' && <>
-                <label style={inline}><input type="color" value={s.patternColor} onChange={e => set({ patternColor: e.target.value })} /> Pattern color</label>
+                <label className="check"><input type="color" value={s.patternColor} onChange={e => set({ patternColor: e.target.value })} /> Pattern color</label>
                 {range('Pattern strength', 'patternAlpha', 2, 50, 1, '%')}
               </>}
               {range('Canvas padding', 'padding', 0, 300)}
@@ -326,14 +334,14 @@ export default function RepoApp() {
         </>}
       </aside>
 
-      <main style={{ position: 'sticky', top: 24 }}>
+      <main className="preview-area">
         {d ? (
-          <div style={{ width: size.w * k, height: size.h * k, overflow: 'hidden', boxShadow: '0 0 0 1px #e5e7eb' }}>
+          <div className="preview-frame" style={{ width: size.w * k, height: size.h * k }}>
             <div style={{ transform: `scale(${k})`, transformOrigin: 'top left' }}>
               <RepoCard ref={ref} d={d} s={view} />
             </div>
           </div>
-        ) : <p style={{ opacity: .6 }}>Add one or more repos (owner/name or URL) and click Load.</p>}
+        ) : <p className="empty">Add one or more repos (owner/name or URL) and click Load.</p>}
       </main>
     </div>
   );

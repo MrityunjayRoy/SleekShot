@@ -1,4 +1,3 @@
-// Place at: src/Root.jsx  (no router library needed)
 import App from './App';
 import GitHubApp from './GitHubApp';
 import RepoApp from './RepoApp';
@@ -16,17 +15,17 @@ export default function Root() {
 
   return (
     <>
-      <nav style={{ display: 'flex', gap: 8, padding: '12px 24px 0', fontFamily: 'system-ui' }}>
-        {PAGES.map(([href, label]) => {
-          const active = href === current[0];
-          return (
-            <a key={href} href={href} style={{
-              padding: '4px 10px', borderRadius: 6, textDecoration: 'none', color: 'inherit',
-              background: active ? '#e5e7eb' : 'transparent', fontWeight: active ? 600 : 400,
-            }}>{label}</a>
-          );
-        })}
-      </nav>
+      <header className="topbar">
+        <div className="brand">
+          <span className="brand__mark" aria-hidden="true">▦</span>
+          <span>Card Studio</span>
+        </div>
+        <nav className="tabs" aria-label="Card type">
+          {PAGES.map(([href, label]) => (
+            <a key={href} href={href} className="tab" aria-current={href === current[0] ? 'page' : undefined}>{label}</a>
+          ))}
+        </nav>
+      </header>
       <Page />
     </>
   );
