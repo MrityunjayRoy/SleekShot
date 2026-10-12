@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { toPng, toBlob } from 'html-to-image';
 import RepoCard from './RepoCard';
+import { useFitScale } from './useFitScale';
 import { GRADIENTS, dominantColors } from './lib';
 import { SIZES } from './ghLib';
 import {
@@ -167,7 +168,7 @@ export default function RepoApp() {
     </details>
   );
 
-  const k = Math.min(680 / size.w, 640 / size.h);
+  const [previewRef, k] = useFitScale(size.w, size.h);
 
   return (
     <div className="workspace">
@@ -334,7 +335,7 @@ export default function RepoApp() {
         </>}
       </aside>
 
-      <main className="preview-area">
+      <main className="preview-area" ref={previewRef}>
         {d ? (
           <div className="preview-frame" style={{ width: size.w * k, height: size.h * k }}>
             <div style={{ transform: `scale(${k})`, transformOrigin: 'top left' }}>

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { toPng, toBlob } from 'html-to-image';
 import Card from './Card';
+import { useFitScale } from './useFitScale';
 import { SIZES, GRADIENTS, fmtDuration, fmtViews, timeAgo, dominantColors } from './lib';
 
 const proxy = u => '/api/img?u=' + encodeURIComponent(u);
@@ -57,7 +58,7 @@ export default function App() {
     fr.readAsDataURL(f);
   };
 
-  const k = Math.min(680 / s.size.w, 620 / s.size.h);
+  const [previewRef, k] = useFitScale(s.size.w, s.size.h, { maxH: 620 });
   const nice = key => key[0].toUpperCase() + key.slice(1);
   const num = (key, min, max) => (
     <label className="field" key={key}>
@@ -156,7 +157,7 @@ export default function App() {
         </>}
       </aside>
 
-      <main className="preview-area">
+      <main className="preview-area" ref={previewRef}>
         {d ? (
           <div className="preview-frame" style={{ width: s.size.w * k, height: s.size.h * k }}>
             <div style={{ transform: `scale(${k})`, transformOrigin: 'top left' }}>

@@ -64,6 +64,7 @@
 body {
   margin: 0;
   min-height: 100svh;
+  overflow-x: hidden;
   background: var(--bg);
   background-image: radial-gradient(var(--bg-grid) 1px, transparent 1px);
   background-size: 22px 22px;
@@ -624,7 +625,7 @@ button:disabled {
 
   .workspace {
     flex-direction: column;
-    padding: 16px;
+    padding: 14px;
     gap: 16px;
   }
 
@@ -639,5 +640,45 @@ button:disabled {
     position: static;
     order: 1;
     width: 100%;
+    max-width: 100%;
+  }
+
+  input:where(:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file'])),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .tabs {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    padding: 7px 12px;
+    white-space: nowrap;
+  }
+
+  .sidebar {
+    padding: 12px;
+  }
+
+  .empty {
+    padding: 40px 20px;
   }
 }

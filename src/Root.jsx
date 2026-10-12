@@ -18,7 +18,7 @@ export default function Root() {
       <header className="topbar">
         <div className="brand">
           <span className="brand__mark" aria-hidden="true">▦</span>
-          <span>Card Studio</span>
+          <span>SleekShot</span>
         </div>
         <nav className="tabs" aria-label="Card type">
           {PAGES.map(([href, label]) => (
