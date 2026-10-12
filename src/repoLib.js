@@ -50,9 +50,9 @@ export const FONT_PAIRS = {
 export const REPO_DEFAULTS = {
   // canvas + export
   sizeName: 'Square 1080×1080', cw: 1080, ch: 1080, scale: 2,
-  bg: true, mode: 'solid', color: '#e8e6f0', c1: '#6366f1', c2: '#ec4899', angle: 135,
+  bg: true, mode: 'solid', color: '#ffffff', c1: '#6366f1', c2: '#ec4899', angle: 135,
   auto: ['#222', '#444'], image: null, blur: 40,
-  pattern: 'none', patternColor: '#ffffff', patternAlpha: 12, padding: 70,
+  pattern: 'dots', patternColor: '#000000', patternAlpha: 18, padding: 70,
   // card
   cardW: 100, ratio: '4:5', radius: 28, borderW: 0, innerPad: 26, shadow: true, shadowAmt: 55,
   // palette

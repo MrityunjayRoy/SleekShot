@@ -67,9 +67,9 @@ export const DEFAULTS = {
   // canvas
   sizeName: 'Square 1080×1080', cw: 1080, ch: 1080, scale: 2,
   // background
-  bg: true, mode: 'gradient', color: '#111827', c1: '#6366f1', c2: '#ec4899', angle: 135,
+  bg: true, mode: 'solid', color: '#ffffff', c1: '#6366f1', c2: '#ec4899', angle: 135,
   auto: ['#222', '#444'], image: null, blur: 40,
-  pattern: 'none', patternColor: '#ffffff', patternAlpha: 12,
+  pattern: 'dots', patternColor: '#000000', patternAlpha: 18,
   // card frame
   padding: 80, cardW: 100, radius: 24, borderW: 1, innerPad: 22, cardOpacity: 100,
   shadow: true, shadowAmt: 60, glow: false, accentBar: 'none',

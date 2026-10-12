@@ -10,7 +10,8 @@ export default function App() {
   const [url, setUrl] = useState('');
   const [d, setD] = useState(null);
   const [s, setS] = useState({
-    mode: 'gradient', color: '#111827', c1: '#6366f1', c2: '#ec4899', angle: 135,
+    mode: 'solid', color: '#ffffff', c1: '#6366f1', c2: '#ec4899', angle: 135,
+    pattern: 'dots', patternColor: '#000000', patternAlpha: 18,
     auto: ['#222', '#444'], image: null, blur: 40, padding: 64, radius: 20, shadow: true,
     size: SIZES[0], showAvatar: true, showStats: true, showDuration: true,
   });
@@ -120,6 +121,22 @@ export default function App() {
               {(s.mode === 'gradient' || s.mode === 'auto') && num('angle', 0, 360)}
               {s.mode === 'blur' && num('blur', 0, 100)}
               {s.mode === 'image' && <input type="file" accept="image/*" onChange={upload} aria-label="Background image" />}
+              <label className="field">
+                <span className="field__label">Pattern overlay</span>
+                <select value={s.pattern} onChange={e => set({ pattern: e.target.value })}>
+                  {['none', 'dots', 'grid', 'lines'].map(p => <option key={p}>{p}</option>)}
+                </select>
+              </label>
+              {s.pattern !== 'none' && <>
+                <label className="check"><input type="color" value={s.patternColor} onChange={e => set({ patternColor: e.target.value })} /> Pattern color</label>
+                <label className="field">
+                  <span className="field__row">
+                    <span className="field__label">Pattern strength</span>
+                    <span className="field__value">{s.patternAlpha}%</span>
+                  </span>
+                  <input type="range" min={2} max={50} value={s.patternAlpha} onChange={e => set({ patternAlpha: +e.target.value })} />
+                </label>
+              </>}
             </div>
           </div>
 

@@ -102,18 +102,6 @@ body {
   color: var(--text);
 }
 
-.brand__mark {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  font-size: 15px;
-  color: var(--accent-contrast);
-  background: linear-gradient(135deg, var(--accent), #ec4899);
-  box-shadow: var(--shadow-sm);
-}
-
 .tabs {
   display: inline-flex;
   gap: 4px;
@@ -198,6 +186,30 @@ body {
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius);
   background: var(--surface);
+}
+
+/* -------------------------------------------------------------------- footer */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 24px;
+  font-size: 13px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+.footer a {
+  color: var(--text-soft);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.footer a:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 /* ------------------------------------------------------------ form controls */
@@ -366,7 +378,7 @@ button {
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
     transform 0.1s ease, box-shadow 0.15s ease;

@@ -1,4 +1,5 @@
 import { forwardRef } from 'react';
+import { hexA } from './ghLib';
 
 const Card = forwardRef(function Card({ d, s }, ref) {
   // card height ≈ width * 0.7025 (16:9 thumb + info row), so fit it inside the padded canvas
@@ -12,6 +13,16 @@ const Card = forwardRef(function Card({ d, s }, ref) {
 
   const layer = s.mode === 'blur' ? d.thumb : s.mode === 'image' ? s.image : null;
 
+  const pc = hexA(s.patternColor, s.patternAlpha / 100);
+  const pattern =
+    s.pattern === 'dots' ? { backgroundImage: `radial-gradient(${pc} 2px, transparent 2px)`, backgroundSize: '32px 32px' }
+    : s.pattern === 'grid' ? {
+        backgroundImage: `linear-gradient(${pc} 1px, transparent 1px), linear-gradient(90deg, ${pc} 1px, transparent 1px)`,
+        backgroundSize: '40px 40px',
+      }
+    : s.pattern === 'lines' ? { backgroundImage: `repeating-linear-gradient(45deg, ${pc} 0 2px, transparent 2px 22px)` }
+    : null;
+
   return (
     <div ref={ref} style={{
       width: s.size.w, height: s.size.h, position: 'relative', overflow: 'hidden',
@@ -24,6 +35,8 @@ const Card = forwardRef(function Card({ d, s }, ref) {
           transform: s.mode === 'blur' ? 'scale(1.2)' : 'none',
         }} />
       )}
+
+      {pattern && <div style={{ position: 'absolute', inset: 0, ...pattern }} />}
 
       <div style={{
         position: 'relative', width: w, fontSize: w / 40, background: '#0f0f0f', color: '#fff',

@@ -17,7 +17,6 @@ export default function Root() {
     <>
       <header className="topbar">
         <div className="brand">
-          <span className="brand__mark" aria-hidden="true">▦</span>
           <span>SleekShot</span>
         </div>
         <nav className="tabs" aria-label="Card type">
@@ -27,6 +26,11 @@ export default function Root() {
         </nav>
       </header>
       <Page />
+      <footer className="footer">
+        <a href="https://github.com/MrityunjayRoy/SleekShot" target="_blank" rel="noreferrer">GitHub</a>
+        <span aria-hidden="true">·</span>
+        <span>Made with elegance</span>
+      </footer>
     </>
   );
 }
