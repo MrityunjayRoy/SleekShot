@@ -1,4 +1,4 @@
-# Card Studio
+# SleekShot
 
 A small web app that turns live data into share-ready PNG cards. Point it at a
 YouTube video, a GitHub profile, or a GitHub repository, tweak the look in a
