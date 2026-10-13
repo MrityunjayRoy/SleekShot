@@ -1,3 +1,0 @@
-{
-  "rewrites": [{ "source": "/github", "destination": "/index.html" }, { "source": "/repo", "destination": "/index.html"}]
-}
