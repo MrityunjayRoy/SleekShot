@@ -1,0 +1,132 @@
+"use client";
+
+/* eslint-disable @next/next/no-img-element, jsx-a11y/alt-text -- inline-styled card is rasterized by html-to-image, so it keeps plain <img src> */
+
+import type { CSSProperties, Ref } from "react";
+import { hexA } from "@/lib/color";
+import type { VideoData, VideoStyle } from "@/lib/types";
+
+// card height ≈ width * 0.7025 (16:9 thumb + info row), fit inside the padded canvas
+const CARD_FS = 0.7025;
+const ROBOTO =
+  "'Roboto', 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif";
+
+export function YoutubeCard({ d, s, ref }: { d: VideoData; s: VideoStyle; ref: Ref<HTMLDivElement> }) {
+  const w = Math.min(s.size.w - 2 * s.padding, (s.size.h - 2 * s.padding) / CARD_FS);
+
+  const bg: CSSProperties =
+    s.mode === "solid"
+      ? { background: s.color }
+      : s.mode === "gradient"
+        ? { background: `linear-gradient(${s.angle}deg, ${s.c1}, ${s.c2})` }
+        : s.mode === "auto"
+          ? { background: `linear-gradient(${s.angle}deg, ${s.auto[0]}, ${s.auto[1]})` }
+          : { background: "#000" };
+
+  const layer = s.mode === "blur" ? d.thumb : s.mode === "image" ? s.image : null;
+
+  const pc = hexA(s.patternColor, s.patternAlpha / 100);
+  const pattern: CSSProperties | null =
+    s.pattern === "dots"
+      ? { backgroundImage: `radial-gradient(${pc} 2px, transparent 2px)`, backgroundSize: "32px 32px" }
+      : s.pattern === "grid"
+        ? {
+            backgroundImage: `linear-gradient(${pc} 1px, transparent 1px), linear-gradient(90deg, ${pc} 1px, transparent 1px)`,
+            backgroundSize: "40px 40px",
+          }
+        : s.pattern === "lines"
+          ? { backgroundImage: `repeating-linear-gradient(45deg, ${pc} 0 2px, transparent 2px 22px)` }
+          : null;
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        width: s.size.w,
+        height: s.size.h,
+        position: "relative",
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        ...bg,
+      }}
+    >
+      {layer && (
+        <img
+          src={layer}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            filter: s.mode === "blur" ? `blur(${s.blur}px) brightness(.7)` : "none",
+            transform: s.mode === "blur" ? "scale(1.2)" : "none",
+          }}
+        />
+      )}
+
+      {pattern && <div style={{ position: "absolute", inset: 0, ...pattern }} />}
+
+      <div
+        style={{
+          position: "relative",
+          width: w,
+          fontSize: w / 40,
+          background: "#0f0f0f",
+          color: "#fff",
+          borderRadius: s.radius,
+          overflow: "hidden",
+          fontFamily: ROBOTO,
+          boxShadow: s.shadow ? "0 30px 80px rgba(0,0,0,.45)" : "none",
+        }}
+      >
+        <div style={{ position: "relative", aspectRatio: "16/9" }}>
+          <img src={d.thumb} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          {s.showDuration && (
+            <span
+              style={{
+                position: "absolute",
+                right: ".6em",
+                bottom: ".6em",
+                background: "rgba(0,0,0,.8)",
+                padding: ".15em .4em",
+                borderRadius: ".3em",
+                fontSize: ".8em",
+                fontWeight: 600,
+              }}
+            >
+              {d.duration}
+            </span>
+          )}
+        </div>
+
+        <div style={{ display: "flex", gap: ".9em", padding: ".9em 1em 1.1em" }}>
+          {s.showAvatar && (
+            <img src={d.avatar} style={{ width: "2.6em", height: "2.6em", borderRadius: "50%", flexShrink: 0 }} />
+          )}
+          <div style={{ minWidth: 0 }}>
+            <div
+              style={{
+                fontWeight: 600,
+                fontSize: "1.1em",
+                lineHeight: 1.3,
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}
+            >
+              {d.title}
+            </div>
+            <div style={{ color: "#aaa", fontSize: ".9em", marginTop: ".25em" }}>
+              {d.channel}
+              {s.showStats && ` · ${d.views} · ${d.ago}`}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
