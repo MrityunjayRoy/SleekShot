@@ -22,7 +22,6 @@ function ToolCard({
     >
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold">{title}</h2>
-        <ArrowUpRight className="size-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
       </div>
       <p className="text-sm text-muted-foreground">{desc}</p>
       {children}
