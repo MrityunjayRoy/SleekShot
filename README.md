@@ -1,4 +1,12 @@
+<div align="center">
+
+<img src="public/cards/repo-MrityunjayRoy-SleekShot-transparent.png" alt="SleekShot repository card" width="300">
+
 # SleekShot
+
+Make sleek looking screenshots in one click. No signup or login.
+
+</div>
 
 Turn live data into share-ready PNG cards. Point SleekShot at a YouTube video,
 a GitHub profile, or a GitHub repository, tweak the look in a live preview, and
