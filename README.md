@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/cards/repo-MrityunjayRoy-SleekShot-transparent.png" alt="SleekShot repository card" width="300">
+<img src="public/cards/repo-MrityunjayRoy-SleekShot-transparent.png" alt="SleekShot repository card" width="500">
 
 # SleekShot
 
