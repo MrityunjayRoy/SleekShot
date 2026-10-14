@@ -6,6 +6,8 @@ const ALLOWED = [
   "yt3.ggpht.com",
   "yt3.googleusercontent.com",
   "avatars.githubusercontent.com",
+  "pbs.twimg.com",
+  "video.twimg.com",
 ];
 
 export async function GET(req: NextRequest) {

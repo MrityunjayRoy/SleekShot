@@ -40,6 +40,91 @@ export interface VideoStyle {
   showDuration: boolean;
 }
 
+/* ---------------------------------- Twitter / X ------------------------ */
+
+export interface TweetMedia {
+  type: "photo" | "video";
+  url: string;
+  poster: string;
+  alt: string;
+  aspect: number;
+}
+
+export interface QuotedTweet {
+  authorName: string;
+  handle: string;
+  avatar: string;
+  text: string;
+  media: TweetMedia[];
+}
+
+export interface TweetData {
+  id: string;
+  url: string;
+  text: string;
+  authorName: string;
+  handle: string;
+  avatar: string;
+  verified: boolean;
+  createdAt: string;
+  date: string;
+  time: string;
+  replies: string;
+  retweets: string;
+  likes: string;
+  quotes: string;
+  views: string;
+  media: TweetMedia[];
+  quoted: QuotedTweet | null;
+}
+
+export interface TweetShow {
+  avatar: boolean;
+  name: boolean;
+  handle: boolean;
+  verified: boolean;
+  logo: boolean;
+  text: boolean;
+  media: boolean;
+  quoted: boolean;
+  actions: boolean;
+  timestamp: boolean;
+}
+
+export interface TweetStyle {
+  sizeName: string;
+  cw: number;
+  ch: number;
+  scale: number;
+  bg: boolean;
+  mode: BgMode;
+  color: string;
+  c1: string;
+  c2: string;
+  angle: number;
+  auto: string[];
+  image: string | null;
+  blur: number;
+  pattern: PatternMode;
+  patternColor: string;
+  patternAlpha: number;
+  padding: number;
+  cardW: number;
+  radius: number;
+  borderW: number;
+  innerPad: number;
+  theme: string;
+  surface: string;
+  text: string;
+  muted: string;
+  border: string;
+  accent: string;
+  fontScale: number;
+  gap: number;
+  show: TweetShow;
+  size: Size;
+}
+
 /* ------------------------------ GitHub profile -------------------------- */
 
 export interface Lang {

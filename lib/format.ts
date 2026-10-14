@@ -40,3 +40,13 @@ export function month(iso?: string): string {
     ? new Date(iso).toLocaleDateString("en", { month: "short", year: "numeric" })
     : "";
 }
+
+/** Tweet timestamp split into X-style date and time, in the viewer's timezone. */
+export function tweetDateTime(iso: string): { date: string; time: string } {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return { date: iso || "", time: "" };
+  return {
+    date: d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+  };
+}

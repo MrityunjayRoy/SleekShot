@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight, Clapperboard, FolderGit2 } from "lucide-react";
+import { ArrowUpRight, AtSign, Clapperboard, FolderGit2 } from "lucide-react";
 import { SiteHeader } from "@/components/shell/site-header";
 import { SiteFooter } from "@/components/shell/site-footer";
 
@@ -57,7 +57,7 @@ export default function HomePage() {
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 md:px-6">
         <div className="mb-12 text-center">
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-            What do you want to make?
+            Make cards for all favorite media.
           </h1>
           <p className="mt-3 text-muted-foreground">
             Turn live data into share-ready cards. Pick a tool to start.
@@ -108,6 +108,22 @@ export default function HomePage() {
               <Image
                 src="/cards/repo-preview.png"
                 alt="Example github repo card"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
+          </ToolCard>
+
+          <ToolCard
+            href="/twitter"
+            title="Twitter / X"
+            desc="Render a post that looks exactly like the real thing."
+          >
+            <div className="relative aspect-[2/1] overflow-hidden rounded-lg border">
+              <Image
+                src="/cards/tweet-card.png"
+                alt="Example tweeter card"
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 50vw"
