@@ -14,11 +14,14 @@ import { SelectControl } from "@/components/controls/select-control";
 import { ToggleControl } from "@/components/controls/toggle-control";
 import { TextField } from "@/components/controls/text-field";
 import { BackgroundControls } from "@/components/controls/background-controls";
+import { PresetPicker } from "@/components/controls/preset-picker";
 import { Accordion } from "@/components/ui/accordion";
 import { VIDEO_SIZES } from "@/lib/constants/sizes";
+import { VIDEO_DEFAULTS, VIDEO_PRESETS, type VideoEditorStyle } from "@/lib/constants/youtube";
 import { fmtDuration, fmtViews, timeAgo } from "@/lib/format";
 import { dominantColors } from "@/lib/color";
-import type { VideoStyle } from "@/lib/types";
+import { useEditorState } from "@/lib/hooks/use-editor-state";
+import { applyPreset, type Preset } from "@/lib/presets";
 
 const proxy = (u: string) => "/api/img?u=" + encodeURIComponent(u);
 
@@ -32,35 +35,18 @@ interface VData {
   ago: string;
 }
 
-type SType = Omit<VideoStyle, "size"> & { sizeName: string };
-
-const DEFAULTS: SType = {
-  sizeName: VIDEO_SIZES[0].name,
-  mode: "solid",
-  color: "#ffffff",
-  c1: "#6366f1",
-  c2: "#ec4899",
-  angle: 135,
-  pattern: "dots",
-  patternColor: "#000000",
-  patternAlpha: 18,
-  auto: ["#222", "#444"],
-  image: null,
-  blur: 40,
-  padding: 64,
-  radius: 20,
-  shadow: true,
-  showAvatar: true,
-  showStats: true,
-  showDuration: true,
-};
-
 export function YoutubeEditor() {
   const [url, setUrl] = useState("");
   const [d, setD] = useState<VData | null>(null);
   const [busy, setBusy] = useState(false);
-  const [s, setS] = useState(DEFAULTS);
+  const [s, , setS] = useEditorState<VideoEditorStyle>(VIDEO_DEFAULTS);
+  const [presetId, setPresetId] = useState(VIDEO_PRESETS[0].id);
   const ref = useRef<HTMLDivElement | null>(null);
+
+  const applyStylePreset = (preset: Preset<VideoEditorStyle>) => {
+    setS(applyPreset(s, VIDEO_DEFAULTS, preset));
+    setPresetId(preset.id);
+  };
 
   const size = VIDEO_SIZES.find((z) => z.name === s.sizeName) || VIDEO_SIZES[0];
   const view = { ...s, size };
@@ -120,7 +106,7 @@ export function YoutubeEditor() {
   }
 
   const reset = () => {
-    if (confirm("Reset all style options to defaults?")) setS(DEFAULTS);
+    if (confirm("Reset all style options to defaults?")) setS(VIDEO_DEFAULTS);
   };
 
   const contentFields: Array<[keyof VData, string]> = [
@@ -132,7 +118,11 @@ export function YoutubeEditor() {
   ];
 
   const sidebar = (
-    <Accordion type="multiple" className="w-full gap-1">
+    <Accordion type="multiple" defaultValue={["preset"]} className="w-full gap-1">
+      <Section value="preset" title="Preset">
+        <PresetPicker presets={VIDEO_PRESETS} value={presetId} onSelect={applyStylePreset} />
+      </Section>
+
       {d && (
         <>
           <Section value="content" title="Content">

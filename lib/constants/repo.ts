@@ -1,4 +1,7 @@
 import type { RepoStyle } from "@/lib/types";
+import type { Preset } from "@/lib/presets";
+
+export type RepoEditorStyle = Omit<RepoStyle, "size">;
 
 export const REPO_STATS: Array<[string, string]> = [
   ["stars", "Stars"],
@@ -67,7 +70,7 @@ export const FONT_PAIRS: Record<string, { head: string; body: string; weight: nu
   },
 };
 
-export const REPO_DEFAULTS: Omit<RepoStyle, "size"> = {
+export const REPO_DEFAULTS: RepoEditorStyle = {
   // canvas + export
   sizeName: "Square 1080×1080",
   cw: 1080,
@@ -133,3 +136,11 @@ export const REPO_DEFAULTS: Omit<RepoStyle, "size"> = {
   metaKeys: ["updated", "homepage"],
   stampAngle: -12,
 };
+
+/**
+ * Style presets for the GitHub repo editor. The first entry is always the base
+ * preset the editor starts from; add more by appending here.
+ */
+export const REPO_PRESETS: Preset<RepoEditorStyle>[] = [
+  { id: "default", label: "Default", style: REPO_DEFAULTS },
+];

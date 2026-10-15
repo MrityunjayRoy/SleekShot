@@ -15,9 +15,11 @@ clipboard).
 
 Everything is rendered in the browser and captured with
 [`html-to-image`](https://github.com/bubkoo/html-to-image), so what you see in
-the preview is exactly what gets downloaded. Card style settings are remembered
-in `localStorage` between visits. The app chrome uses a calm, monotonic neutral
-theme (light/dark) — card content keeps its own full-color presets.
+the preview is exactly what gets downloaded. Each editor starts from a base
+style preset (more can be added in `lib/constants/*`); styling is session-only
+and never stored locally, so every visit begins from the base preset. The app
+chrome uses a calm, monotonic neutral theme (light/dark) — card content keeps
+its own full-color presets.
 
 ## Examples
 

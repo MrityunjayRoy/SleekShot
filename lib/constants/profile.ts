@@ -1,4 +1,7 @@
 import type { ProfileStyle } from "@/lib/types";
+import type { Preset } from "@/lib/presets";
+
+export type ProfileEditorStyle = Omit<ProfileStyle, "size">;
 
 export const THEMES: Record<string, { cardBg: string; text: string; muted: string; border: string; accent: string }> = {
   "GitHub Dark": { cardBg: "#0d1117", text: "#e6edf3", muted: "#8b949e", border: "#30363d", accent: "#58a6ff" },
@@ -47,7 +50,7 @@ export const META_DEFS: Array<[string, string]> = [
   ["joined", "Joined"],
 ];
 
-export const PROFILE_DEFAULTS: Omit<ProfileStyle, "size"> = {
+export const PROFILE_DEFAULTS: ProfileEditorStyle = {
   // canvas
   sizeName: "Square 1080×1080",
   cw: 1080,
@@ -121,3 +124,11 @@ export const PROFILE_DEFAULTS: Omit<ProfileStyle, "size"> = {
   },
   order: ["header", "tagline", "bio", "meta", "stats", "langs", "repos", "footer"],
 };
+
+/**
+ * Style presets for the GitHub profile editor. The first entry is always the
+ * base preset the editor starts from; add more by appending here.
+ */
+export const PROFILE_PRESETS: Preset<ProfileEditorStyle>[] = [
+  { id: "default", label: "Default", style: PROFILE_DEFAULTS },
+];

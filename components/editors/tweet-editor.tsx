@@ -15,14 +15,15 @@ import { ColorControl } from "@/components/controls/color-control";
 import { ToggleControl } from "@/components/controls/toggle-control";
 import { TextField } from "@/components/controls/text-field";
 import { BackgroundControls } from "@/components/controls/background-controls";
+import { PresetPicker } from "@/components/controls/preset-picker";
 import { Accordion } from "@/components/ui/accordion";
 import { CARD_SIZES, resolveSize } from "@/lib/constants/sizes";
-import { TWEET_DEFAULTS, TWEET_SHOW, TWEET_THEMES } from "@/lib/constants/tweet";
+import { TWEET_DEFAULTS, TWEET_SHOW, TWEET_THEMES, TWEET_PRESETS } from "@/lib/constants/tweet";
 import { tweetDateTime } from "@/lib/format";
-import { useLocalStyle } from "@/lib/hooks/use-local-style";
+import { useEditorState } from "@/lib/hooks/use-editor-state";
+import { applyPreset, type Preset } from "@/lib/presets";
 import type { QuotedTweet, TweetData, TweetMedia, TweetStyle } from "@/lib/types";
 
-const KEY = "tweet.style.v1";
 const proxy = (u: string) => (u ? "/api/img?u=" + encodeURIComponent(u) : "");
 // pbs.twimg.com serves giant originals; request a card-sized copy instead.
 const down = (u: string) => u.replace(/name=(orig|\d+x\d+)/, "name=large");
@@ -37,9 +38,14 @@ export function TweetEditor() {
   const [url, setUrl] = useState("");
   const [d, setD] = useState<TweetData | null>(null);
   const [busy, setBusy] = useState(false);
-  const [s, setS] = useLocalStyle<SType>(KEY, TWEET_DEFAULTS);
-  const set = (p: Partial<SType>) => setS(p);
+  const [s, set, setS] = useEditorState<SType>(TWEET_DEFAULTS);
+  const [presetId, setPresetId] = useState(TWEET_PRESETS[0].id);
   const ref = useRef<HTMLDivElement | null>(null);
+
+  const applyStylePreset = (preset: Preset<SType>) => {
+    setS(applyPreset(s, TWEET_DEFAULTS, preset));
+    setPresetId(preset.id);
+  };
 
   const size = resolveSize(s.sizeName, s.cw, s.ch);
   const view = { ...s, size };
@@ -104,7 +110,11 @@ export function TweetEditor() {
   };
 
   const sidebar = (
-    <Accordion type="multiple" defaultValue={["theme", "elements"]} className="w-full gap-1">
+    <Accordion type="multiple" defaultValue={["preset", "theme", "elements"]} className="w-full gap-1">
+      <Section value="preset" title="Preset">
+        <PresetPicker presets={TWEET_PRESETS} value={presetId} onSelect={applyStylePreset} />
+      </Section>
+
       {d && (
         <>
           <Section value="export" title="Export">
