@@ -17,33 +17,31 @@ import { TextField } from "@/components/controls/text-field";
 import { OrderRow } from "@/components/controls/order-row";
 import { RepoEditor } from "@/components/controls/repo-editor";
 import { BackgroundControls } from "@/components/controls/background-controls";
+import { PresetPicker } from "@/components/controls/preset-picker";
 import { Accordion } from "@/components/ui/accordion";
 import { CARD_SIZES, resolveSize } from "@/lib/constants/sizes";
-import { THEMES, FONTS, ELEMENTS, META_DEFS, STAT_DEFS, PROFILE_DEFAULTS } from "@/lib/constants/profile";
+import { THEMES, FONTS, ELEMENTS, META_DEFS, STAT_DEFS, PROFILE_DEFAULTS, PROFILE_PRESETS } from "@/lib/constants/profile";
 import { dominantColors } from "@/lib/color";
-import { useLocalStyle } from "@/lib/hooks/use-local-style";
+import { useEditorState } from "@/lib/hooks/use-editor-state";
+import { applyPreset, type Preset } from "@/lib/presets";
 import type { ProfileData, ProfileStyle } from "@/lib/types";
 
-const KEY = "ghcard.style.v2";
 const proxy = (u: string) => "/api/img?u=" + encodeURIComponent(u);
 
 type SType = Omit<ProfileStyle, "size">;
-
-function decorate(saved: Partial<SType>): Partial<SType> {
-  const order = [
-    ...(saved.order || []).filter((id) => id in ELEMENTS),
-    ...PROFILE_DEFAULTS.order.filter((id) => !(saved.order || []).includes(id)),
-  ];
-  return { ...saved, order, show: { ...PROFILE_DEFAULTS.show, ...(saved.show || {}) } };
-}
 
 export function GithubEditor() {
   const [user, setUser] = useState("");
   const [d, setD] = useState<ProfileData | null>(null);
   const [busy, setBusy] = useState(false);
-  const [s, setS] = useLocalStyle<SType>(KEY, PROFILE_DEFAULTS, decorate);
-  const set = (p: Partial<SType>) => setS(p);
+  const [s, set, setS] = useEditorState<SType>(PROFILE_DEFAULTS);
+  const [presetId, setPresetId] = useState(PROFILE_PRESETS[0].id);
   const ref = useRef<HTMLDivElement | null>(null);
+
+  const applyStylePreset = (preset: Preset<SType>) => {
+    setS(applyPreset(s, PROFILE_DEFAULTS, preset));
+    setPresetId(preset.id);
+  };
 
   const size = resolveSize(s.sizeName, s.cw, s.ch);
   const view = { ...s, size };
@@ -163,7 +161,11 @@ export function GithubEditor() {
   ];
 
   const sidebar = (
-    <Accordion type="multiple" defaultValue={["export", "order"]} className="w-full gap-1">
+    <Accordion type="multiple" defaultValue={["preset", "export", "order"]} className="w-full gap-1">
+      <Section value="preset" title="Preset">
+        <PresetPicker presets={PROFILE_PRESETS} value={presetId} onSelect={applyStylePreset} />
+      </Section>
+
       <Section value="export" title="Export">
         <SelectControl label="Canvas size" value={s.sizeName} options={sizes} onValueChange={(v) => set({ sizeName: v })} />
         {s.sizeName === "Custom" && (

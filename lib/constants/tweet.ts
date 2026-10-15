@@ -1,4 +1,7 @@
 import type { TweetShow, TweetStyle } from "@/lib/types";
+import type { Preset } from "@/lib/presets";
+
+export type TweetEditorStyle = Omit<TweetStyle, "size">;
 
 /** X (Twitter) color themes. Kept as plain hex so exports are deterministic. */
 export const TWEET_THEMES: Record<
@@ -22,7 +25,7 @@ export const TWEET_SHOW: Array<[keyof TweetShow, string]> = [
   ["timestamp", "Timestamp & views"],
 ];
 
-export const TWEET_DEFAULTS: Omit<TweetStyle, "size"> = {
+export const TWEET_DEFAULTS: TweetEditorStyle = {
   // canvas + export
   sizeName: "Portrait 1080×1350",
   cw: 1080,
@@ -66,3 +69,11 @@ export const TWEET_DEFAULTS: Omit<TweetStyle, "size"> = {
     timestamp: true,
   },
 };
+
+/**
+ * Style presets for the X (Twitter) editor. The first entry is always the base
+ * preset the editor starts from; add more by appending here.
+ */
+export const TWEET_PRESETS: Preset<TweetEditorStyle>[] = [
+  { id: "default", label: "Default", style: TWEET_DEFAULTS },
+];

@@ -16,18 +16,19 @@ import { ToggleControl } from "@/components/controls/toggle-control";
 import { TextField } from "@/components/controls/text-field";
 import { Chips } from "@/components/controls/chips";
 import { BackgroundControls } from "@/components/controls/background-controls";
+import { PresetPicker } from "@/components/controls/preset-picker";
 import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Layers } from "lucide-react";
 import { cn } from "cn";
 import { CARD_SIZES, resolveSize } from "@/lib/constants/sizes";
-import { REPO_STATS, REPO_META, REPO_SHOW, RATIOS, ART_PALETTES, FONT_PAIRS, REPO_DEFAULTS } from "@/lib/constants/repo";
+import { REPO_STATS, REPO_META, REPO_SHOW, RATIOS, ART_PALETTES, FONT_PAIRS, REPO_DEFAULTS, REPO_PRESETS } from "@/lib/constants/repo";
 import { dominantColors } from "@/lib/color";
 import { month } from "@/lib/format";
-import { useLocalStyle } from "@/lib/hooks/use-local-style";
+import { useEditorState } from "@/lib/hooks/use-editor-state";
+import { applyPreset, type Preset } from "@/lib/presets";
 import type { RepoData, RepoStyle } from "@/lib/types";
 
-const KEY = "ghrepo.style.v2";
 const proxy = (u: string) => "/api/img?u=" + encodeURIComponent(u);
 
 type SType = Omit<RepoStyle, "size">;
@@ -37,9 +38,14 @@ export function RepoEditor() {
   const [items, setItems] = useState<RepoData[]>([]);
   const [active, setActive] = useState(0);
   const [busy, setBusy] = useState(false);
-  const [s, setS] = useLocalStyle<SType>(KEY, REPO_DEFAULTS);
-  const set = (p: Partial<SType>) => setS(p);
+  const [s, set, setS] = useEditorState<SType>(REPO_DEFAULTS);
+  const [presetId, setPresetId] = useState(REPO_PRESETS[0].id);
   const ref = useRef<HTMLDivElement | null>(null);
+
+  const applyStylePreset = (preset: Preset<SType>) => {
+    setS(applyPreset(s, REPO_DEFAULTS, preset));
+    setPresetId(preset.id);
+  };
 
   const d = items[active] || null;
   const setD = (nd: RepoData) => setItems((list) => list.map((x, i) => (i === active ? nd : x)));
@@ -192,7 +198,11 @@ export function RepoEditor() {
 
   const sidebar = (
     <div className="grid gap-3 py-1">
-      <Accordion type="multiple" defaultValue={["art", "palette", "elements"]} className="w-full gap-1">
+      <Accordion type="multiple" defaultValue={["preset", "art", "palette", "elements"]} className="w-full gap-1">
+        <Section value="preset" title="Preset">
+          <PresetPicker presets={REPO_PRESETS} value={presetId} onSelect={applyStylePreset} />
+        </Section>
+
         {d && (
           <>
             <Section value="export" title="Export">
