@@ -30,7 +30,7 @@ function ToolCard({
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
+    <div id="top" className="flex min-h-dvh flex-col bg-background">
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 md:px-6">
         <div className="mb-12 text-center">
@@ -42,7 +42,11 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <section
+          id="tools"
+          aria-label="Card tools"
+          className="grid scroll-mt-24 grid-cols-1 gap-4 md:grid-cols-2"
+        >
           <ToolCard
             href="/github"
             title="GitHub profile"
@@ -105,7 +109,7 @@ export default function HomePage() {
               />
             </div>
           </ToolCard>
-        </div>
+        </section>
       </main>
       <SiteFooter />
     </div>
