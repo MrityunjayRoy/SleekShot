@@ -22,7 +22,7 @@ export function EditorLayout({
   children: React.ReactNode;
   actions?: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="flex h-dvh flex-col bg-background">

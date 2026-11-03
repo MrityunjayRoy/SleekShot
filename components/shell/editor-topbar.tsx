@@ -27,8 +27,8 @@ export function EditorTopbar({
         {sidebarOpen ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
       </Button>
       <Link href="/" className="flex min-w-0 items-center gap-1.5 text-sm font-semibold tracking-tight">
-        <span className="hidden sm:inline">SleekShot</span>
-        <span className="hidden truncate text-muted-foreground md:inline">/ {title}</span>
+        <span className=" sm:inline">SleekShot</span>
+        <span className=" truncate text-muted-foreground md:inline">/ {title}</span>
       </Link>
       <div className="ml-auto flex min-w-0 items-center justify-end gap-1">{children}</div>
     </header>
