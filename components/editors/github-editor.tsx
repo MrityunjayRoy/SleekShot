@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { toBlob, toPng } from "html-to-image";
+import { toBlob, toPng } from "@/lib/export";
 import { toast } from "sonner";
 import { EditorLayout } from "@/components/shell/editor-layout";
 import { CanvasStage } from "@/components/shell/canvas-stage";
@@ -98,14 +98,14 @@ export function GithubEditor() {
     if (!el) return;
     const a = document.createElement("a");
     a.download = name;
-    a.href = await toPng(el, { pixelRatio: s.scale, cacheBust: true });
+    a.href = await toPng(el, s.scale);
     a.click();
   };
 
   const copy = async () => {
     const el = ref.current;
     if (!el) return;
-    const blob = await toBlob(el, { pixelRatio: s.scale, cacheBust: true });
+    const blob = await toBlob(el, s.scale);
     if (!blob) return;
     await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
     toast.success("Copied to clipboard");
