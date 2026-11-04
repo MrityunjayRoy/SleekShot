@@ -85,7 +85,7 @@ export default function HomePage() {
           >
             <div className="relative aspect-[2/1] overflow-hidden rounded-lg border">
               <Image
-                src="/cards/repo-preview.png"
+                src="/cards/repo-preview-new.png"
                 alt="Example github repo card"
                 fill
                 className="object-cover"
