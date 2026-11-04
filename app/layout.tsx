@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Geist, Geist_Mono, Instrument_Serif, Space_Mono, Syne } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeShortcut } from "@/components/theme-shortcut";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
+          <ThemeShortcut />
           <Toaster position="bottom-right" richColors closeButton />
         </ThemeProvider>
       </body>

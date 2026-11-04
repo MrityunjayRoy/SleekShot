@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, type MouseEvent } from "react";
+import { useCallback } from "react";
 import { flushSync } from "react-dom";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -13,12 +13,14 @@ type ViewTransitionDocument = Document & {
   };
 };
 
-export function ThemeToggle() {
+type ToggleOrigin = Element | { x: number; y: number };
+
+export function useThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
-  const toggle = useCallback(
-    (event: MouseEvent<HTMLButtonElement>) => {
+  const toggleTheme = useCallback(
+    (origin?: ToggleOrigin) => {
       const next = isDark ? "light" : "dark";
       const doc = document as ViewTransitionDocument;
       const reduceMotion = window.matchMedia(
@@ -30,9 +32,18 @@ export function ThemeToggle() {
         return;
       }
 
-      const rect = event.currentTarget.getBoundingClientRect();
-      const x = rect.left + rect.width / 2;
-      const y = rect.top + rect.height / 2;
+      let x = window.innerWidth / 2;
+      let y = window.innerHeight / 2;
+
+      if (origin instanceof Element) {
+        const rect = origin.getBoundingClientRect();
+        x = rect.left + rect.width / 2;
+        y = rect.top + rect.height / 2;
+      } else if (origin) {
+        x = origin.x;
+        y = origin.y;
+      }
+
       const endRadius = Math.hypot(
         Math.max(x, window.innerWidth - x),
         Math.max(y, window.innerHeight - y)
@@ -63,12 +74,21 @@ export function ThemeToggle() {
     [isDark, setTheme]
   );
 
+  return { isDark, toggleTheme };
+}
+
+export function ThemeToggle() {
+  const { isDark, toggleTheme } = useThemeToggle();
+
   return (
     <Button
+      data-theme-toggle
       variant="ghost"
       size="icon"
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      onClick={toggle}
+      aria-keyshortcuts="t"
+      title="Toggle theme (t)"
+      onClick={(event) => toggleTheme(event.currentTarget)}
       className="relative"
     >
       <Sun className="size-4 scale-100 rotate-0 transition-all duration-200 ease-out dark:scale-0 dark:-rotate-90" />
