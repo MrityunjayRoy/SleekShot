@@ -5,9 +5,7 @@ import { toBlob, toPng } from "@/lib/export";
 import { toast } from "sonner";
 import { EditorLayout } from "@/components/shell/editor-layout";
 import { CanvasStage } from "@/components/shell/canvas-stage";
-import { ExportActions } from "@/components/export/export-actions";
 import { YoutubeCard } from "@/components/cards/youtube-card";
-import { UrlBar } from "@/components/controls/url-bar";
 import { Section } from "@/components/controls/section-group";
 import { RangeControl } from "@/components/controls/range-control";
 import { SelectControl } from "@/components/controls/select-control";
@@ -106,7 +104,16 @@ export function YoutubeEditor() {
   }
 
   const reset = () => {
-    if (confirm("Reset all style options to defaults?")) setS(VIDEO_DEFAULTS);
+    if (
+      !confirm(
+        "Reset everything? This clears the loaded video, URL, and all style changes.",
+      )
+    )
+      return;
+    setUrl("");
+    setD(null);
+    setS(VIDEO_DEFAULTS);
+    setPresetId(VIDEO_PRESETS[0].id);
   };
 
   const contentFields: Array<[keyof VData, string]> = [
@@ -161,12 +168,22 @@ export function YoutubeEditor() {
     <EditorLayout
       title="YouTube"
       sidebar={sidebar}
-      actions={
-        <ExportActions onDownload={() => download()} onCopy={copy} onExportAll={exportAll} exportAllLabel="All sizes" onReset={reset} disabled={!d} />
-      }
-      urlBar={
-        <UrlBar value={url} onChange={setUrl} onLoad={load} busy={busy} button="Load video" placeholder="https://youtube.com/watch?v=…" />
-      }
+      actions={{
+        onDownload: () => download(),
+        onCopy: copy,
+        onExportAll: exportAll,
+        exportAllLabel: "All sizes",
+        onReset: reset,
+        disabled: !d || busy,
+      }}
+      urlBar={{
+        value: url,
+        onChange: setUrl,
+        onLoad: load,
+        busy,
+        button: "Load video",
+        placeholder: "https://youtube.com/watch?v=…",
+      }}
     >
       <CanvasStage size={size} maxH={620} empty="Enter a YouTube URL and load a video to preview your card.">
         {d && <YoutubeCard ref={ref} d={d} s={view} />}

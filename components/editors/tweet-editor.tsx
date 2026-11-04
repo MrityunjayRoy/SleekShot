@@ -5,9 +5,7 @@ import { toBlob, toPng } from "@/lib/export";
 import { toast } from "sonner";
 import { EditorLayout } from "@/components/shell/editor-layout";
 import { CanvasStage } from "@/components/shell/canvas-stage";
-import { ExportActions } from "@/components/export/export-actions";
 import { TweetCard } from "@/components/cards/tweet-card";
-import { UrlBar } from "@/components/controls/url-bar";
 import { Section } from "@/components/controls/section-group";
 import { RangeControl } from "@/components/controls/range-control";
 import { SelectControl } from "@/components/controls/select-control";
@@ -106,7 +104,16 @@ export function TweetEditor() {
   }
 
   const reset = () => {
-    if (confirm("Reset all style options to defaults?")) setS(TWEET_DEFAULTS);
+    if (
+      !confirm(
+        "Reset everything? This clears the loaded post, URL, and all style changes.",
+      )
+    )
+      return;
+    setUrl("");
+    setD(null);
+    setS(TWEET_DEFAULTS);
+    setPresetId(TWEET_PRESETS[0].id);
   };
 
   const sidebar = (
@@ -181,26 +188,22 @@ export function TweetEditor() {
     <EditorLayout
       title="Twitter / X"
       sidebar={sidebar}
-      actions={
-        <ExportActions
-          onDownload={() => download()}
-          onCopy={copy}
-          onExportAll={exportAllSizes}
-          exportAllLabel="All sizes"
-          onReset={reset}
-          disabled={!d}
-        />
-      }
-      urlBar={
-        <UrlBar
-          value={url}
-          onChange={setUrl}
-          onLoad={load}
-          busy={busy}
-          button="Load post"
-          placeholder="https://x.com/jack/status/20"
-        />
-      }
+      actions={{
+        onDownload: () => download(),
+        onCopy: copy,
+        onExportAll: exportAllSizes,
+        exportAllLabel: "All sizes",
+        onReset: reset,
+        disabled: !d || busy,
+      }}
+      urlBar={{
+        value: url,
+        onChange: setUrl,
+        onLoad: load,
+        busy,
+        button: "Load post",
+        placeholder: "https://x.com/jack/status/20",
+      }}
     >
       <CanvasStage size={size} empty="Paste an X / Twitter post URL and click Load post to preview the card.">
         {d && <TweetCard ref={ref} d={d} s={view} />}

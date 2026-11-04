@@ -5,6 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+export type UrlBarProps = {
+  value: string;
+  onChange: (v: string) => void;
+  onLoad: () => void;
+  busy?: boolean;
+  button: string;
+  placeholder?: string;
+  multiline?: boolean;
+  rows?: number;
+};
+
 export function UrlBar({
   value,
   onChange,
@@ -14,16 +25,7 @@ export function UrlBar({
   placeholder,
   multiline,
   rows = 3,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  onLoad: () => void;
-  busy?: boolean;
-  button: string;
-  placeholder?: string;
-  multiline?: boolean;
-  rows?: number;
-}) {
+}: UrlBarProps) {
   return (
     <>
       {multiline ? (

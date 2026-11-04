@@ -36,7 +36,7 @@ export function OptionsSidebar({
   if (!isLg) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="left" className="w-80 gap-0 p-3">
+        <SheetContent side="left" className="w-80 gap-0 p-3" data-shortcut-overlay="sidebar">
           {children}
         </SheetContent>
       </Sheet>
