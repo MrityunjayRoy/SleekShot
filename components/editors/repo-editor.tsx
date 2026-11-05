@@ -5,9 +5,7 @@ import { toBlob, toPng } from "@/lib/export";
 import { toast } from "sonner";
 import { EditorLayout } from "@/components/shell/editor-layout";
 import { CanvasStage } from "@/components/shell/canvas-stage";
-import { ExportActions } from "@/components/export/export-actions";
 import { RepoCard } from "@/components/cards/repo-card";
-import { UrlBar } from "@/components/controls/url-bar";
 import { Section } from "@/components/controls/section-group";
 import { RangeControl } from "@/components/controls/range-control";
 import { SelectControl } from "@/components/controls/select-control";
@@ -154,7 +152,17 @@ export function RepoEditor() {
   }
 
   const reset = () => {
-    if (confirm("Reset all style options to defaults?")) setS(REPO_DEFAULTS);
+    if (
+      !confirm(
+        "Reset everything? This clears the loaded repositories, URL, and all style changes.",
+      )
+    )
+      return;
+    setInput("");
+    setItems([]);
+    setActive(0);
+    setS(REPO_DEFAULTS);
+    setPresetId(REPO_PRESETS[0].id);
   };
 
   const toggleIn = (key: "statKeys" | "metaKeys", val: string) =>
@@ -370,32 +378,27 @@ export function RepoEditor() {
           {sidebar}
         </>
       }
-      actions={
-        <ExportActions
-          onDownload={() => download()}
-          onCopy={copy}
-          onExportAll={exportAllSizes}
-          exportAllLabel="All sizes"
-          onReset={reset}
-          extra={
-            items.length > 1
-              ? [{ label: `Download all ${items.length} repos`, icon: <Layers />, onClick: exportAllRepos }]
-              : undefined
-          }
-          disabled={!d}
-        />
-      }
-      urlBar={
-        <UrlBar
-          value={input}
-          onChange={setInput}
-          onLoad={load}
-          busy={busy}
-          button="Load repos"
-          placeholder={"One per line (max 12)\nvercel/next.js\nhttps://github.com/facebook/react"}
-          multiline
-        />
-      }
+      actions={{
+        onDownload: () => download(),
+        onCopy: copy,
+        onExportAll: exportAllSizes,
+        exportAllLabel: "All sizes",
+        onReset: reset,
+        extra:
+          items.length > 1
+            ? [{ label: `Download all ${items.length} repos`, icon: <Layers />, onClick: exportAllRepos }]
+            : undefined,
+        disabled: !d || busy,
+      }}
+      urlBar={{
+        value: input,
+        onChange: setInput,
+        onLoad: load,
+        busy,
+        button: "Load repos",
+        placeholder: "One per line (max 12)\nvercel/next.js\nhttps://github.com/facebook/react",
+        multiline: true,
+      }}
     >
       <CanvasStage size={size} empty="Add one or more repos (owner/name or URL) and click Load repos.">
         {d && <RepoCard ref={ref} d={d} s={view} />}

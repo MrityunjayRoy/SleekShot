@@ -5,9 +5,7 @@ import { toBlob, toPng } from "@/lib/export";
 import { toast } from "sonner";
 import { EditorLayout } from "@/components/shell/editor-layout";
 import { CanvasStage } from "@/components/shell/canvas-stage";
-import { ExportActions } from "@/components/export/export-actions";
 import { ProfileCard } from "@/components/cards/profile-card";
-import { UrlBar } from "@/components/controls/url-bar";
 import { Section } from "@/components/controls/section-group";
 import { RangeControl } from "@/components/controls/range-control";
 import { SelectControl } from "@/components/controls/select-control";
@@ -122,7 +120,16 @@ export function GithubEditor() {
   }
 
   const reset = () => {
-    if (confirm("Reset all style options to defaults?")) setS(PROFILE_DEFAULTS);
+    if (
+      !confirm(
+        "Reset everything? This clears the loaded profile, URL, and all style changes.",
+      )
+    )
+      return;
+    setUser("");
+    setD(null);
+    setS(PROFILE_DEFAULTS);
+    setPresetId(PROFILE_PRESETS[0].id);
   };
 
   const toggleIn = (key: "metaKeys" | "statKeys", val: string) =>
@@ -363,17 +370,22 @@ export function GithubEditor() {
     <EditorLayout
       title="GitHub profile"
       sidebar={sidebar}
-      actions={
-        <ExportActions
-          onDownload={() => download()}
-          onCopy={copy}
-          onExportAll={exportAll}
-          exportAllLabel="All presets"
-          onReset={reset}
-          disabled={!d}
-        />
-      }
-      urlBar={<UrlBar value={user} onChange={setUser} onLoad={load} busy={busy} button="Load profile" placeholder="octocat or github.com/user" />}
+      actions={{
+        onDownload: () => download(),
+        onCopy: copy,
+        onExportAll: exportAll,
+        exportAllLabel: "All presets",
+        onReset: reset,
+        disabled: !d || busy,
+      }}
+      urlBar={{
+        value: user,
+        onChange: setUser,
+        onLoad: load,
+        busy,
+        button: "Load profile",
+        placeholder: "octocat or github.com/user",
+      }}
     >
       <CanvasStage size={size} empty="Enter a GitHub username to start.">
         {d && <ProfileCard ref={ref} d={d} s={view} />}
