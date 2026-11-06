@@ -4,6 +4,7 @@
 
 import type { CSSProperties, Ref } from "react";
 import { hexA } from "@/lib/color";
+import { CHECKER } from "@/lib/canvas";
 import type { VideoData, VideoStyle } from "@/lib/types";
 
 // card height ≈ width * 0.7025 (16:9 thumb + info row), fit inside the padded canvas
@@ -12,6 +13,7 @@ const ROBOTO =
   "'Roboto', 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif";
 
 export function YoutubeCard({ d, s, ref }: { d: VideoData; s: VideoStyle; ref: Ref<HTMLDivElement> }) {
+  const bgOn = s.bg;
   const w = Math.min(s.size.w - 2 * s.padding, (s.size.h - 2 * s.padding) / CARD_FS);
 
   const bg: CSSProperties =
@@ -23,7 +25,7 @@ export function YoutubeCard({ d, s, ref }: { d: VideoData; s: VideoStyle; ref: R
           ? { background: `linear-gradient(${s.angle}deg, ${s.auto[0]}, ${s.auto[1]})` }
           : { background: "#000" };
 
-  const layer = s.mode === "blur" ? d.thumb : s.mode === "image" ? s.image : null;
+  const layer = !bgOn ? null : s.mode === "blur" ? d.thumb : s.mode === "image" ? s.image : null;
 
   const pc = hexA(s.patternColor, s.patternAlpha / 100);
   const pattern: CSSProperties | null =
@@ -40,7 +42,7 @@ export function YoutubeCard({ d, s, ref }: { d: VideoData; s: VideoStyle; ref: R
 
   return (
     <div
-      ref={ref}
+      ref={bgOn ? ref : undefined}
       style={{
         width: s.size.w,
         height: s.size.h,
@@ -49,7 +51,7 @@ export function YoutubeCard({ d, s, ref }: { d: VideoData; s: VideoStyle; ref: R
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        ...bg,
+        ...(bgOn ? bg : CHECKER),
       }}
     >
       {layer && (
@@ -67,9 +69,10 @@ export function YoutubeCard({ d, s, ref }: { d: VideoData; s: VideoStyle; ref: R
         />
       )}
 
-      {pattern && <div style={{ position: "absolute", inset: 0, ...pattern }} />}
+      {bgOn && pattern && <div style={{ position: "absolute", inset: 0, ...pattern }} />}
 
       <div
+        ref={bgOn ? undefined : ref}
         style={{
           position: "relative",
           width: w,
@@ -79,7 +82,7 @@ export function YoutubeCard({ d, s, ref }: { d: VideoData; s: VideoStyle; ref: R
           borderRadius: s.radius,
           overflow: "hidden",
           fontFamily: ROBOTO,
-          boxShadow: s.shadow ? "0 30px 80px rgba(0,0,0,.45)" : "none",
+          boxShadow: bgOn && s.shadow ? "0 30px 80px rgba(0,0,0,.45)" : "none",
         }}
       >
         <div style={{ position: "relative", aspectRatio: "16/9" }}>

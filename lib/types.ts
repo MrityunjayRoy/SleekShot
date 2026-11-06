@@ -20,6 +20,7 @@ export interface VideoData {
 }
 
 export interface VideoStyle {
+  bg: boolean;
   mode: BgMode;
   color: string;
   c1: string;

@@ -6,6 +6,7 @@ export type VideoEditorStyle = Omit<VideoStyle, "size"> & { sizeName: string };
 
 export const VIDEO_DEFAULTS: VideoEditorStyle = {
   sizeName: VIDEO_SIZES[0].name,
+  bg: true,
   mode: "solid",
   color: "#ffffff",
   c1: "#6366f1",

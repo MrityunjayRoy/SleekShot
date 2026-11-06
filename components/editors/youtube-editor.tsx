@@ -49,6 +49,9 @@ export function YoutubeEditor() {
   const size = VIDEO_SIZES.find((z) => z.name === s.sizeName) || VIDEO_SIZES[0];
   const view = { ...s, size };
 
+  const suffix = s.bg ? "" : "-transparent";
+  const base = `yt-card${suffix}`;
+
   async function load() {
     if (!url.trim()) return;
     setBusy(true);
@@ -75,7 +78,7 @@ export function YoutubeEditor() {
     }
   }
 
-  const download = async (name = "yt-card.png") => {
+  const download = async (name = `${base}.png`) => {
     const el = ref.current;
     if (!el) return;
     const a = document.createElement("a");
@@ -98,7 +101,7 @@ export function YoutubeEditor() {
     for (const z of VIDEO_SIZES) {
       setS((o) => ({ ...o, sizeName: z.name }));
       await new Promise((r) => setTimeout(r, 250));
-      await download(`yt-card-${z.w}x${z.h}.png`);
+      await download(`${base}-${z.w}x${z.h}.png`);
     }
     setS((o) => ({ ...o, sizeName: prev }));
   }
@@ -139,13 +142,13 @@ export function YoutubeEditor() {
           </Section>
 
           <Section value="bg" title="Background">
-            <BackgroundControls s={s} set={(p) => setS((o) => ({ ...o, ...p }))} showBgToggle={false} />
+            <BackgroundControls s={s} set={(p) => setS((o) => ({ ...o, ...p }))} />
           </Section>
 
           <Section value="layout" title="Layout">
             <RangeControl label="Padding" value={s.padding} min={16} max={200} onChange={(v) => setS((o) => ({ ...o, padding: v }))} />
             <RangeControl label="Corner radius" value={s.radius} min={0} max={60} onChange={(v) => setS((o) => ({ ...o, radius: v }))} />
-            <ToggleControl label="Shadow" checked={!!s.shadow} onCheckedChange={(v) => setS((o) => ({ ...o, shadow: v }))} />
+            <ToggleControl label="Shadow (needs background)" checked={!!s.shadow} disabled={!s.bg} onCheckedChange={(v) => setS((o) => ({ ...o, shadow: v }))} />
             <ToggleControl label="Avatar" checked={!!s.showAvatar} onCheckedChange={(v) => setS((o) => ({ ...o, showAvatar: v }))} />
             <ToggleControl label="Views & date" checked={!!s.showStats} onCheckedChange={(v) => setS((o) => ({ ...o, showStats: v }))} />
             <ToggleControl label="Duration" checked={!!s.showDuration} onCheckedChange={(v) => setS((o) => ({ ...o, showDuration: v }))} />
