@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { FontShuffleHeadline } from "@/components/landing/font-shuffle-headline";
 import { SiteHeader } from "@/components/shell/site-header";
 import { SiteFooter } from "@/components/shell/site-footer";
 
@@ -34,12 +35,7 @@ export default function HomePage() {
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 md:px-6">
         <div className="mb-12 text-center">
-          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Make cards for all favorite media
-          </h1>
-          <p className="mt-3 text-muted-foreground">
-            Turn live data into share-ready cards. Pick a tool to start.
-          </p>
+          <FontShuffleHeadline />
         </div>
 
         <section
