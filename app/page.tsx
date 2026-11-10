@@ -36,9 +36,6 @@ export default function HomePage() {
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 md:px-6">
         <div className="mb-12 text-center">
           <FontShuffleHeadline />
-          <p className="mt-3 text-muted-foreground">
-            Turn live data into share-ready cards. Pick a tool to start.
-          </p>
         </div>
 
         <section

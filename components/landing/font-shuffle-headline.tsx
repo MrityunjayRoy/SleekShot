@@ -2,31 +2,20 @@
 
 import { useEffect, useState } from "react";
 
-type LandingFont = {
-  family: string;
-  weight: number;
-};
+const WORDS = ["sleek", "stylish", "elegant"];
 
-// Each family is already self-hosted by next/font in app/layout.tsx.
-const WORD_FONTS: LandingFont[] = [
-  { family: "var(--font-geist-sans)", weight: 700 },
-  { family: "var(--font-dm-sans)", weight: 700 },
-  { family: "var(--font-instrument-serif)", weight: 400 },
-  { family: "var(--font-space-mono)", weight: 700 },
-  { family: "var(--font-syne)", weight: 700 },
-];
-
-const SHUFFLE_MIN_MS = 2000;
-const SHUFFLE_MAX_MS = 3000;
-const SWAP_INTERVAL_MS = 350;
+const WORD_HOLD_MIN_MS = 2000;
+const WORD_HOLD_MAX_MS = 3000;
+const WORD_SPIN_MS = 650;
+const WORD_SWAP_DELAY_MS = WORD_SPIN_MS / 2;
 
 function randomIndex(length: number) {
   return Math.floor(Math.random() * length);
 }
 
-/** Random permutation of font indices, never starting with the current font. */
+/** Random permutation of word indices, never starting with the current word. */
 function shuffledIndices(current: number) {
-  const indices = WORD_FONTS.map((_, index) => index);
+  const indices = WORDS.map((_, index) => index);
 
   for (let i = indices.length - 1; i > 0; i--) {
     const j = randomIndex(i + 1);
@@ -42,11 +31,11 @@ function shuffledIndices(current: number) {
 }
 
 export function FontShuffleHeadline() {
-  // Font 0 renders on the server so hydration starts from a stable face.
-  const [fontIndex, setFontIndex] = useState(0);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [spinId, setSpinId] = useState(0);
 
   useEffect(() => {
-    // Respect reduced motion by keeping the stable default face.
+    // Respect reduced motion by keeping a single, static word.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
@@ -54,30 +43,47 @@ export function FontShuffleHeadline() {
     let current = 0;
     let queue = shuffledIndices(current);
     let cursor = 0;
+    let holdTimer = 0;
+    let swapTimer = 0;
+    let cancelled = false;
 
-    const showNext = () => {
-      if (cursor >= queue.length) {
-        queue = shuffledIndices(current);
-        cursor = 0;
-      }
+    const scheduleNext = () => {
+      const holdFor =
+        WORD_HOLD_MIN_MS + Math.random() * (WORD_HOLD_MAX_MS - WORD_HOLD_MIN_MS);
 
-      current = queue[cursor];
-      cursor += 1;
-      setFontIndex(current);
+      holdTimer = window.setTimeout(() => {
+        if (cancelled) {
+          return;
+        }
+
+        if (cursor >= queue.length) {
+          queue = shuffledIndices(current);
+          cursor = 0;
+        }
+
+        const next = queue[cursor];
+        cursor += 1;
+        setSpinId((id) => id + 1);
+
+        swapTimer = window.setTimeout(() => {
+          if (cancelled) {
+            return;
+          }
+
+          current = next;
+          setWordIndex(next);
+        }, WORD_SWAP_DELAY_MS);
+
+        scheduleNext();
+      }, holdFor);
     };
 
-    const start = window.setTimeout(showNext, 0);
-    const interval = window.setInterval(showNext, SWAP_INTERVAL_MS);
-    const stopAt =
-      SHUFFLE_MIN_MS + Math.random() * (SHUFFLE_MAX_MS - SHUFFLE_MIN_MS);
-    const timeout = window.setTimeout(() => {
-      window.clearInterval(interval);
-    }, stopAt);
+    scheduleNext();
 
     return () => {
-      window.clearTimeout(start);
-      window.clearInterval(interval);
-      window.clearTimeout(timeout);
+      cancelled = true;
+      window.clearTimeout(holdTimer);
+      window.clearTimeout(swapTimer);
     };
   }, []);
 
@@ -85,25 +91,12 @@ export function FontShuffleHeadline() {
     <h1 className="flex min-h-[4.5rem] items-center justify-center text-3xl font-bold tracking-tight sm:min-h-[2.25rem] md:min-h-[2.5rem] md:text-4xl">
       <span>
         Make sharing content{" "}
-        <span className="inline-grid items-baseline">
-          {WORD_FONTS.map((font, index) => {
-            const isActive = index === fontIndex;
-
-            return (
-              <span
-                key={font.family}
-                aria-hidden={isActive ? undefined : true}
-                className={`col-start-1 row-start-1 whitespace-nowrap transition-[opacity,filter,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                  isActive
-                    ? "translate-y-0 opacity-100 blur-0"
-                    : "translate-y-[0.06em] opacity-0 blur-[3px]"
-                }`}
-                style={{ fontFamily: font.family, fontWeight: font.weight }}
-              >
-                sleek
-              </span>
-            );
-          })}
+        <span
+          key={spinId}
+          className={`inline-block ${spinId > 0 ? "word-spin" : ""}`}
+          style={{ fontFamily: "var(--font-felipa)", fontWeight: 400 }}
+        >
+          {WORDS[wordIndex]}
         </span>
       </span>
     </h1>
