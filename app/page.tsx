@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { cn } from "cn";
 import { FontShuffleHeadline } from "@/components/landing/font-shuffle-headline";
 import { SiteHeader } from "@/components/shell/site-header";
 import { SiteFooter } from "@/components/shell/site-footer";
@@ -8,23 +9,44 @@ function ToolCard({
   href,
   title,
   desc,
-  children,
+  preview,
+  alt,
+  className,
 }: {
   href: string;
   title: string;
   desc: string;
-  children?: React.ReactNode;
+  preview: string;
+  alt: string;
+  className?: string;
 }) {
   return (
     <Link
       href={href}
-      className="group flex flex-col gap-2 rounded-xl border bg-card p-2 transition-colors hover:border-foreground/30"
+      className={cn(
+        "group grid aspect-[6/5] grid-rows-[5fr_3fr] overflow-hidden rounded-xl border border-border/60 bg-muted/40 shadow-sm transition-all hover:border-foreground/30 hover:bg-muted/40 hover:shadow-md",
+        className
+      )}
     >
-      <div className="flex items-center justify-between">
-        <h2 className="text-md font-semibold font-#FBFAF5">{title}</h2>
+      <div className="relative overflow-hidden p-2">
+        <div className="relative h-full w-full overflow-hidden rounded-lg">
+          <Image
+            src={preview}
+            alt={alt}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        </div>
       </div>
-      <p className="text-sm text-muted-foreground">{desc}</p>
-      {children}
+      <div className="flex flex-col justify-center gap-1 overflow-hidden p-3 lg:p-4">
+        <h2 className="text-base font-semibold leading-tight tracking-tight">
+          {title}
+        </h2>
+        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+          {desc}
+        </p>
+      </div>
     </Link>
   );
 }
@@ -41,70 +63,37 @@ export default function HomePage() {
         <section
           id="tools"
           aria-label="Card tools"
-          className="grid scroll-mt-24 grid-cols-1 gap-4 md:grid-cols-2"
+          className="grid scroll-mt-24 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
           <ToolCard
             href="/github"
             title="GitHub profile"
             desc="Name, bio, stats and top languages as one elegant card."
-          >
-            <div className="relative aspect-[2/1] overflow-hidden rounded-lg border">
-              <Image
-                src="/cards/site-preview-github-pf.png"
-                alt="Example GitHub profile card"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-            </div>
-          </ToolCard>
+            preview="/cards/site-preview-github-pf.png"
+            alt="Example GitHub profile card"
+          />
           <ToolCard
             href="/youtube"
             title="YouTube"
             desc="A video thumbnail wrapped in a shareable card."
-          >
-            <div className="relative aspect-[2/1] overflow-hidden rounded-lg border">
-              <Image
-                src="/cards/yt-preview.png"
-                alt="Example youtube card"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-            </div>
-          </ToolCard>
-
+            preview="/cards/yt-preview.png"
+            alt="Example youtube card"
+          />
           <ToolCard
             href="/repo"
             title="GitHub repo"
             desc="Make any repository look like a product shot."
-          >
-            <div className="relative aspect-[2/1] overflow-hidden rounded-lg border">
-              <Image
-                src="/cards/repo-preview-new.png"
-                alt="Example github repo card"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-            </div>
-          </ToolCard>
-
+            preview="/cards/repo-preview-new.png"
+            alt="Example github repo card"
+          />
           <ToolCard
             href="/twitter"
             title="Twitter / X"
             desc="Render a post that looks exactly like the real thing."
-          >
-            <div className="relative aspect-[2/1] overflow-hidden rounded-lg border">
-              <Image
-                src="/cards/tweet-card.png"
-                alt="Example tweeter card"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-            </div>
-          </ToolCard>
+            preview="/cards/tweet-card.png"
+            alt="Example tweeter card"
+            className="lg:col-start-2"
+          />
         </section>
       </main>
       <SiteFooter />
